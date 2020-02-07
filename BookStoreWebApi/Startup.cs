@@ -15,6 +15,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.CodeAnalysis.Options;
 using Newtonsoft.Json;
 using System.Reflection.Metadata;
+using Microsoft.AspNetCore.Authentication;
+using BookStoreWebApi.Handlers;
 
 namespace BookStoreWebApi
 {
@@ -34,6 +36,9 @@ services.AddControllers();
             services.AddMvc(option => option.EnableEndpointRouting = false)
                             .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
                             .AddNewtonsoftJson(opt => opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
+            services.AddAuthentication("BasicAuthentication")
+                .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
+
             services.AddDbContext<BookStoresDBContext>(options => options.UseSqlServer(Configuration.GetConnectionString("BookStoresDB")));
         }
 
@@ -48,6 +53,7 @@ services.AddControllers();
             app.UseHttpsRedirection();
 
             app.UseRouting();
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
